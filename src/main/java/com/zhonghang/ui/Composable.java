@@ -102,13 +102,18 @@ public class Composable {
     }
 
     public void alignmentTo(Composable parent) {
+        topLeft[0] = parent.modifier.paddingStart;
+        topLeft[1] = parent.modifier.paddingTop;
         switch (modifier.alignment) {
             case TopCenter:
-                topLeft[0] = (parent.size[0] - size[0]) / 2;
+                topLeft[0] = parent.modifier.paddingStart + (parent.modifier.width - size[0]) / 2;
                 break;
             case Center:
-                topLeft[0] = (parent.size[0] - size[0]) / 2;
-                topLeft[1] = (parent.size[1] - size[1]) / 2;
+                topLeft[0] = parent.modifier.paddingStart + (parent.modifier.width - size[0]) / 2;
+                topLeft[1] = parent.modifier.paddingTop + (parent.modifier.height - size[1]) / 2;
+                break;
+            case CenterStart:
+                topLeft[1] = parent.modifier.paddingTop + (parent.modifier.height - size[1]) / 2;
                 break;
         }
     }

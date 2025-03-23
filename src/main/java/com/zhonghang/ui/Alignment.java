@@ -4,4 +4,5 @@ public enum Alignment {
     TopLeft,
     TopCenter,
     Center,
+    CenterStart
 }

@@ -2,7 +2,7 @@ package com.zhonghang.ui;
 
 import java.awt.*;
 
-public class BoxDemo {
+public class TextDemo {
 
     public static void main(String[] args) {
         new JFrameComposableApp(new Box() {{
