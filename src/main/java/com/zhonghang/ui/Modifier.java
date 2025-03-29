@@ -1,11 +1,12 @@
 package com.zhonghang.ui;
 
 import java.awt.*;
+import java.awt.geom.Area;
 import java.util.function.Consumer;
 
 public class Modifier {
 
-    public Alignment alignment = Alignment.TopLeft;
+    public Alignment alignment = Alignment.TopStart;
     public Color backgroundColor;
     public int height;
     public int width;
@@ -17,6 +18,7 @@ public class Modifier {
     public Runnable onMouseEnter;
     public Runnable onMouseExit;
     public Consumer<Graphics2D> drawBehind;
+    public int cornerRadius;
 
     public void size(int width, int height) {
         this.width = width;

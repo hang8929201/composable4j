@@ -1,8 +1,9 @@
 package com.zhonghang.ui;
 
 public enum Alignment {
-    TopLeft,
+    TopStart,
     TopCenter,
+    TopEnd,
     Center,
     CenterStart
 }

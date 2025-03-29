@@ -21,6 +21,6 @@ public class Text extends Composable {
         super.paint(graphics);
         graphics.setFont(font);
         graphics.setColor(textColor);
-        graphics.drawString(text, modifier.paddingStart, modifier.height * 4 / 5 + modifier.paddingTop);
+        graphics.drawString(text, 0, modifier.height * 4 / 5);
     }
 }

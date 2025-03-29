@@ -25,9 +25,7 @@ public class Composable {
     public int paintCount;
     public int supplyTotalTime;
     public int supplyCount;
-
     public int[] topLeft = {0, 0};
-    public int[] size;
 
     // status
     public boolean isStatusChanged;
@@ -46,9 +44,8 @@ public class Composable {
         }
 
         if (bufferedImage == null) {
-            size = getSize();
-            if (size[0] > 0 && size[1] > 0) {
-                bufferedImage = new BufferedImage(size[0], size[1], BufferedImage.TYPE_INT_ARGB);
+            if (modifier.width > 0 && modifier.height > 0) {
+                bufferedImage = new BufferedImage(modifier.width, modifier.height, BufferedImage.TYPE_INT_ARGB);
             }
             isContentChanged = true;
         }
@@ -66,7 +63,10 @@ public class Composable {
         }
 
         long s = System.currentTimeMillis();
-        Graphics2D graphics = bufferedImage == null ? null : (Graphics2D) bufferedImage.getGraphics();
+
+        Graphics2D graphics = bufferedImage == null ?
+                null : (Graphics2D) bufferedImage.getGraphics();
+
         if (graphics != null && isContentChanged) {
             paint(graphics);
         }
@@ -77,8 +77,10 @@ public class Composable {
             if (composable.bufferedImage != null && graphics != null &&
                     (isContentChanged || composable.isContentChanged)) {
                 isContentChanged = true;
+                BufferedImage image = Utils.createRoundedCornerImageV2(
+                        composable.bufferedImage, composable.modifier.cornerRadius);
                 graphics.drawImage(
-                        composable.bufferedImage,
+                        image,
                         composable.topLeft[0],
                         composable.topLeft[1],
                         null);
@@ -88,8 +90,8 @@ public class Composable {
                     graphics.drawRect(
                             composable.topLeft[0],
                             composable.topLeft[1],
-                            composable.bufferedImage.getWidth(),
-                            composable.bufferedImage.getHeight()
+                            image.getWidth(),
+                            image.getHeight()
                     );
                 }
                 composable.isContentChanged = false;
@@ -102,48 +104,49 @@ public class Composable {
     }
 
     public void alignmentTo(Composable parent) {
-        topLeft[0] = parent.modifier.paddingStart;
-        topLeft[1] = parent.modifier.paddingTop;
+        topLeft[0] = modifier.paddingStart;
+        topLeft[1] = modifier.paddingTop;
         switch (modifier.alignment) {
             case TopCenter:
-                topLeft[0] = parent.modifier.paddingStart + (parent.modifier.width - size[0]) / 2;
+                topLeft[0] = (parent.modifier.width - modifier.width) / 2;
+                break;
+            case TopEnd:
+                topLeft[0] = parent.modifier.width - modifier.width - modifier.paddingEnd;
                 break;
             case Center:
-                topLeft[0] = parent.modifier.paddingStart + (parent.modifier.width - size[0]) / 2;
-                topLeft[1] = parent.modifier.paddingTop + (parent.modifier.height - size[1]) / 2;
+                topLeft[0] = (parent.modifier.width - modifier.width) / 2;
+                topLeft[1] = (parent.modifier.height - modifier.height) / 2;
                 break;
             case CenterStart:
-                topLeft[1] = parent.modifier.paddingTop + (parent.modifier.height - size[1]) / 2;
+                topLeft[1] = (parent.modifier.height - modifier.width) / 2;
                 break;
         }
     }
 
     protected void paint(Graphics2D graphics) {
+
+        // clean
         Composite composite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.Clear);
-        graphics.fillRect(0, 0, size[0], size[1]);
+        graphics.fillRect(0, 0, modifier.width, modifier.height);
         graphics.setComposite(composite);
+
+        // draw background
         if (modifier.backgroundColor != null) {
             graphics.setColor(modifier.backgroundColor);
-            graphics.fillRect(modifier.paddingStart, modifier.paddingTop, modifier.width, modifier.height);
+            graphics.fillRect(0, 0, modifier.width, modifier.height);
         }
+
+        // draw behind
         if (modifier.drawBehind != null) {
             modifier.drawBehind.accept(graphics);
         }
+
         if (DEBUG_VIEW) {
             graphics.setColor(Color.red);
             graphics.setStroke(new BasicStroke(2));
-            graphics.drawRect(modifier.paddingStart, modifier.paddingTop, modifier.width, modifier.height);
+            graphics.drawRect(0, 0, modifier.width, modifier.height);
         }
-    }
-
-    private int[] getSize() {
-        int[] size = {modifier.width, modifier.height};
-        size[0] += modifier.paddingStart;
-        size[0] += modifier.paddingEnd;
-        size[1] += modifier.paddingTop;
-        size[1] += modifier.paddingBottom;
-        return size;
     }
 
     public void handleMouseEvent(MouseStatusChangeEvent mouseEvent) {
